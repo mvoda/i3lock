@@ -26,6 +26,7 @@
 #include <xkbcommon/xkbcommon-x11.h>
 #include <cairo.h>
 #include <cairo/cairo-xcb.h>
+#include <math.h>
 
 #include "i3lock.h"
 #include "xcb.h"
@@ -877,7 +878,18 @@ int main(int argc, char *argv[]) {
 
     if (image_path) {
         /* Create a pixmap to render on, fill it with the background color */
-        img = cairo_image_surface_create_from_png(image_path);
+        img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, last_resolution[0], last_resolution[1]);
+        cairo_t *img_ctx = cairo_create(img);
+        cairo_surface_t *img_tmp = cairo_image_surface_create_from_png(image_path);
+        uint32_t image_width = cairo_image_surface_get_width(img_tmp);
+        uint32_t image_height = cairo_image_surface_get_height(img_tmp);
+        double x_scale, y_scale, xy_scale;
+        x_scale = (double) last_resolution[0]/image_width;
+        y_scale = (double) last_resolution[1]/image_height;
+        xy_scale = fmin(x_scale, y_scale);
+        cairo_scale(img_ctx, xy_scale, xy_scale);
+        cairo_set_source_surface(img_ctx, img_tmp, 0, 0);
+        cairo_paint(img_ctx);
         /* In case loading failed, we just pretend no -i was specified. */
         if (cairo_surface_status(img) != CAIRO_STATUS_SUCCESS) {
             fprintf(stderr, "Could not load image \"%s\": %s\n",
