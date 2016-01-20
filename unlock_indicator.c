@@ -164,7 +164,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                 for (int i=0; i < 3; i++) {
                     rgb16[i] = ((255 - rgb16[i]) * .5) + rgb16[i];
                 }
-                cairo_set_source_rgba(cr, rgb16[0] / 255.0, rgb16[1] / 255.0, rgb16[2] / 255.0, 0.2);
+                cairo_set_source_rgba(cr, rgb16[0] / 255.0, rgb16[1] / 255.0, rgb16[2] / 255.0, 0.0);
                 break;
         }
         free(rgb16);
